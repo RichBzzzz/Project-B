@@ -1,5 +1,7 @@
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +34,10 @@ public class LibraryController {
 
         btnReg.setOnAction(e -> {
             view.drawRegister();
-            view.registerBtn.setOnAction(ev -> handleRegister());
             view.backBtn.setOnAction(ev -> initLanding());
+            view.regMember.setOnAction(ev -> handleRegister(false));
+            view.regLibrarian.setOnAction(ev -> handleRegister(true));
+
         });
 
         view.drawLanding(btnMem, btnLib, btnReg);
@@ -51,10 +55,26 @@ public class LibraryController {
         }
     }
 
-    private void handleRegister() {
-        String res = model.registerMember(view.regNameField.getText(), view.regUserField.getText(), view.regPassField.getText());
-        showAlert(res);
-        if(res.startsWith("Success")) initLanding();
+    private void handleRegister(boolean isLibrarian) {
+        String name = view.regNameField.getText();
+        String user = view.regUserField.getText();
+        String pass = view.regPassField.getText();
+   
+        if (name.isEmpty() || user.isEmpty() || pass.isEmpty()){
+            showAlert("Missing value! Please fill in all fields");
+            return;
+        }
+
+        String whichType;
+
+        if(isLibrarian){
+            whichType = model.registerLibrarian(name, user, pass);
+        }else{
+            whichType = model.registerMember(name, user, pass);
+        }
+
+        showAlert(whichType);
+        if(whichType.startsWith("Success")) initLanding();
     }
 
     private void showLibrarianMenu() {
@@ -65,6 +85,10 @@ public class LibraryController {
             view.backBtn.setOnAction(e -> showLibrarianMenu());
         }));
 
+        btns.add(createNavBtn("Search Book by Author", () -> handleSearch("AUTHOR")));
+        btns.add(createNavBtn("Search Book by Title", () -> handleSearch("TITLE")));
+        btns.add(createNavBtn("Search Book by Genre", () -> handleSearch("GENRE")));
+        
         btns.add(createNavBtn("Add new book", () -> {
             view.drawAddBook();
             view.actionBtn.setText("Add");
@@ -79,7 +103,7 @@ public class LibraryController {
             view.actionBtn.setOnAction(e -> handleRemoveStock());
             view.backBtn.setOnAction(e -> showLibrarianMenu());
         }));
-
+        
         btns.add(createNavBtn("Logout", this::initLanding));
         view.drawMenu("Librarian", btns);
     }
@@ -108,13 +132,49 @@ public class LibraryController {
             view.backBtn.setOnAction(e -> showMemberMenu());
         }));
 
+        btns.add(createNavBtn("Search Book by Author", () -> handleSearch("AUTHOR")));
+        btns.add(createNavBtn("Search Book by Title", () -> handleSearch("TITLE")));
+        btns.add(createNavBtn("Search Book by Genre", () -> handleSearch("GENRE")));
+
         btns.add(createNavBtn("Borrowing History", () -> {
             view.drawHistory(model.getMemberHistory());
             view.backBtn.setOnAction(e -> showMemberMenu());
         }));
 
+        btns.add(createNavBtn("Add Book to Wish List", () -> {
+            view.drawAddToWishList();
+            view.actionBtn.setOnAction(e -> handleAddToWishList());
+            view.backBtn.setOnAction(e -> showMemberMenu());
+        }));
+
+        btns.add(createNavBtn("View Reading Wish List", () -> {
+            List<Book> wishListBooks = model.getWishListBook();
+            view.drawWishList(wishListBooks);
+            view.backBtn.setOnAction(e -> showMemberMenu());
+        }));
+
         btns.add(createNavBtn("Logout", this::initLanding));
         view.drawMenu(((Member)model.getCurrentUser()).getName(), btns);
+
+    }
+
+    private void handleSearch(String type){
+        view.drawSearchBy(type);
+        view.actionBtn.setText("Search");
+        view.actionBtn.setOnAction(e -> {
+            String query = view.searchField.getText();
+            if(query.isEmpty()){
+            showAlert("Field cannot be empty!");
+            return;
+            }
+        List<Book> result = model.searchBooks(query, type.toUpperCase());
+        if(result.isEmpty()){
+            showAlert("No books found!");
+        }else{
+            view.drawBookTable(result);
+            view.backBtn.setOnAction(ev -> showMemberMenu());
+            }
+        });
     }
 
     private void handleBorrow() {
@@ -144,6 +204,19 @@ public class LibraryController {
             } else showAlert("Book not found");
         } catch (Exception e) { 
             showAlert("Invalid number"); 
+        }
+    }
+
+    public void handleAddToWishList(){
+        String bookID = view.bookIdField.getText();
+        Book b = model.findBookById(bookID);
+
+        if (b != null){
+            ((Member) model.getCurrentUser()).addToReadingList(bookID);
+            showAlert(b.getTitle() + " added to your wish list");
+            showMemberMenu();
+        }else{
+            showAlert("Book not found!");
         }
     }
 
