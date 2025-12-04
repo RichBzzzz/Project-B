@@ -181,37 +181,57 @@ public class LibraryModel implements Searchable {
     
     public User authenticateUser(String username, String password) {
         for (Librarian l : librarians) {
-            if (l.getUserName().equals(username) && l.checkPassword(password)) return l;
+         for (Librarian l : librarians) {
+            if (l.getUserName().equals(username) && l.checkPassword(password)) {
+                return l;
+            }
         }
         for (Member m : members) {
-            if (m.getUserName().equals(username) && m.checkPassword(password)) return m;
+            if (m.getUserName().equals(username) && m.checkPassword(password)) {
+                return m;
+            }
         }
         return null;
     }
 
     public String registerMember(String name, String user, String pass) {
-        for(Member m : members) if(m.getUserName().equals(user)) return "Username taken";
+        for(Member m : members) {
+            if(m.getUserName().equals(user)) {
+                return "Username taken";
+            }
+        }
         String id = "M" + (members.size() + 1);
         members.add(new Member(name, user, pass, id));
         return "Success! ID: " + id;
     }
 
     public String registerLibrarian(String name, String user, String pass){
-        for (Librarian l : librarians) 
-            if(l.getUserName().equals(user))
+        for (Librarian l : librarians) {
+            if (l.getUserName().equals(user)) {
                 return "Username taken";
+            }
+        }
         String id = "L" + (librarians.size() + 1);
         librarians.add(new Librarian(name, user, pass, id));
         return "Success! ID: " + id;
 
     }
 
-    public void setCurrentUser(User user) { this.currentUser = user; }
-    public User getCurrentUser() { return currentUser; }
+    public void setCurrentUser(User user) { 
+        this.currentUser = user; 
+    }
+
+    public User getCurrentUser() { 
+        return currentUser; 
+    }
 
     @Override
     public Book findBookById(String id) {
-        for(Book b : allBooks) if(b.getBookID().equals(id)) return b;
+        for(Book b : allBooks) {
+            if(b.getBookID().equals(id)) {
+                return b;
+            }
+        }
         return null;
     }
 
@@ -219,24 +239,39 @@ public class LibraryModel implements Searchable {
     public List<Book> searchBooks(String query, String type) {
         List<Book> results = new ArrayList<>();
         String q = query.toLowerCase();
+
         for (Book b : allBooks) {
-            if (type.equals("TITLE") && b.getTitle().toLowerCase().contains(q)) results.add(b);
-            else if (type.equals("AUTHOR") && b.getAuthor().toLowerCase().contains(q)) results.add(b);
-            else if (type.equals("GENRE") && b.getGenre().toString().toLowerCase().equals(q)) results.add(b);
+            if (type.equals("TITLE") && b.getTitle().toLowerCase().contains(q)) {
+                results.add(b);
+            } else if (type.equals("AUTHOR") && b.getAuthor().toLowerCase().contains(q)) {
+                results.add(b);
+            } else if (type.equals("GENRE") && b.getGenre().toString().toLowerCase().equals(q)) {
+                results.add(b);
+            }
         }
         return results;
     }
 
     public String borrowBook(String bookID, String rentDate, String dueDate) {
-        if (!(currentUser instanceof Member)) return "Only members can borrow.";
+        if (!(currentUser instanceof Member)) {
+            return "Only members can borrow.";
+        }
+
         Book b = findBookById(bookID);
-        if (b == null) return "Book not found.";
-        if (b.getQuantity() <= 0) return "Out of stock.";
+
+        if (b == null) {
+            return "Book not found.";
+        }
+
+        if (b.getQuantity() <= 0) {
+            return "Out of stock.";
+        }
 
         b.removeQuantity(1);
         String recID = "R" + (historyRecords.size() + 1);
         History h = new History(recID, ((Member)currentUser).getMemberID(), bookID, rentDate, dueDate);
         historyRecords.add(h);
+        
         return "Book Borrowed Successfully!";
     }
 
@@ -275,3 +310,4 @@ public class LibraryModel implements Searchable {
     }
 
 }
+
