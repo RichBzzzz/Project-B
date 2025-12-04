@@ -17,6 +17,8 @@ public class LibraryView {
     public TextField regNameField = new TextField();
     public TextField regUserField = new TextField();
     public TextField regPassField = new TextField();
+    public Button regMember = new Button ("Member");
+    public Button regLibrarian = new Button ("Librarian");
     
     public TextField searchField = new TextField();
     public TextField bookIdField = new TextField();
@@ -72,11 +74,14 @@ public class LibraryView {
 
     public void drawRegister() {
         VBox layout = createBaseLayout("Register");
+        HBox accountType = new HBox(15);
+        accountType.setAlignment(Pos.CENTER);
+        accountType.getChildren().addAll(regMember, regLibrarian);
         layout.getChildren().addAll(
             new Label("Full Name:"), regNameField,
             new Label("Username:"), regUserField,
             new Label("Password:"), regPassField,
-            registerBtn, backBtn
+            new Label ("Account type:"), accountType, backBtn
         );
         showScene(layout);
     }
@@ -105,8 +110,11 @@ public class LibraryView {
         TableColumn<Book, String> qtyCol = new TableColumn<>("Quantity"); // Quantity
         qtyCol.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getQuantity())));
 
+        TableColumn<Book, String> idCol = new TableColumn<>("ID"); // ID
+        idCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getBookID()));
+
         // Set columns and items
-        table.getColumns().setAll(nameCol, authCol, statCol, qtyCol);
+        table.getColumns().setAll(idCol, nameCol, authCol, statCol, qtyCol);
         table.getItems().setAll(books);
         
         // Layout
@@ -165,6 +173,46 @@ public class LibraryView {
             new Label("Quantity"), qtyField,
             actionBtn, backBtn
         );
+        showScene(layout);
+    }
+
+    public void drawSearchBy(String type){
+        VBox layout = createBaseLayout("Search by " + type);
+        layout.getChildren().addAll(new Label ("Enter " + type.toLowerCase()), searchField, actionBtn, backBtn);
+        showScene(layout);
+    }
+
+    public void drawAddToWishList(){
+        VBox layout = createBaseLayout("Add to wish list");
+        layout.getChildren().addAll(new Label("Enter BookID to add to your wish list"), bookIdField, actionBtn, backBtn);
+        actionBtn.setText("Add");
+        showScene(layout);
+    }
+
+    public void drawWishList(List<Book> books){
+        VBox layout = createBaseLayout("Reading Wish List");
+        
+        TableColumn<Book, String> nameCol = new TableColumn<>("Books"); // Title
+        nameCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitle()));
+        
+        TableColumn<Book, String> authCol = new TableColumn<>("Author"); // Author
+        authCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAuthor()));
+        
+        TableColumn<Book, String> statCol = new TableColumn<>("Status"); // Status
+        statCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatusStr()));
+
+        TableColumn<Book, String> qtyCol = new TableColumn<>("Quantity"); // Quantity
+        qtyCol.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getQuantity())));
+
+        TableColumn<Book, String> idCol = new TableColumn<>("ID"); // ID
+        idCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getBookID()));
+
+        // Set columns and items
+        table.getColumns().setAll(idCol, nameCol, authCol, statCol, qtyCol);
+        table.getItems().setAll(books);
+        
+        // Layout
+        layout.getChildren().addAll(table, backBtn);
         showScene(layout);
     }
 }
