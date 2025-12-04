@@ -76,7 +76,9 @@ public class LibraryController {
         }
 
         showAlert(whichType);
-        if(whichType.startsWith("Success")) initLanding();
+        if(whichType.startsWith("Success")) {
+            initLanding();
+        }
     }
 
     private void showLibrarianMenu() {
@@ -234,4 +236,5 @@ public class LibraryController {
         alert.show();
     }
 }
+
 
