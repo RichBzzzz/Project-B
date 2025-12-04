@@ -1,7 +1,5 @@
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,9 +45,13 @@ public class LibraryController {
         User user = model.authenticateUser(view.usernameField.getText(), view.passwordField.getText());
         if (user != null) {
             model.setCurrentUser(user);
-            if (isLibrarian && user instanceof Librarian) showLibrarianMenu();
-            else if (!isLibrarian && user instanceof Member) showMemberMenu();
-            else showAlert("Invalid Role for User");
+            if (isLibrarian && user instanceof Librarian) {
+                showLibrarianMenu();
+            } else if (!isLibrarian && user instanceof Member) {
+                showMemberMenu();
+            } else {
+                showAlert("Invalid Role for User");
+            }
         } else {
             showAlert("Invalid Credentials");
         }
@@ -232,3 +234,4 @@ public class LibraryController {
         alert.show();
     }
 }
+
