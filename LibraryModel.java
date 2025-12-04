@@ -180,7 +180,6 @@ public class LibraryModel implements Searchable {
     }
     
     public User authenticateUser(String username, String password) {
-        for (Librarian l : librarians) {
          for (Librarian l : librarians) {
             if (l.getUserName().equals(username) && l.checkPassword(password)) {
                 return l;
@@ -310,4 +309,5 @@ public class LibraryModel implements Searchable {
     }
 
 }
+
 
