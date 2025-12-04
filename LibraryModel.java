@@ -196,6 +196,16 @@ public class LibraryModel implements Searchable {
         return "Success! ID: " + id;
     }
 
+    public String registerLibrarian(String name, String user, String pass){
+        for (Librarian l : librarians) 
+            if(l.getUserName().equals(user))
+                return "Username taken";
+        String id = "L" + (librarians.size() + 1);
+        librarians.add(new Librarian(name, user, pass, id));
+        return "Success! ID: " + id;
+
+    }
+
     public void setCurrentUser(User user) { this.currentUser = user; }
     public User getCurrentUser() { return currentUser; }
 
@@ -248,6 +258,20 @@ public class LibraryModel implements Searchable {
             }
         }
         return logs;
+    }
+
+    public List<Book> getWishListBook(){
+        if (!(currentUser instanceof Member)) return new ArrayList<>();
+        Member m = (Member) currentUser;
+        List<Book> books = new ArrayList<>();
+
+        for (String id : m.getReadingList()){
+            Book b = findBookById(id);
+            if (b != null){
+                books.add(b);
+            }
+        }
+        return books;
     }
 
 }
