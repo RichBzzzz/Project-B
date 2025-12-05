@@ -175,8 +175,12 @@ public class LibraryController {
         if(result.isEmpty()){
             showAlert("No books found!");
         }else{
+            if (model.getCurrentUser() instanceof Librarian) {
+                view.backBtn.setOnAction(ev -> showLibrarianMenu());
+            } else {
+                view.backBtn.setOnAction(ev -> showMemberMenu());
+            }
             view.drawBookTable(result);
-            view.backBtn.setOnAction(ev -> showMemberMenu());
             }
         });
     }
@@ -236,5 +240,6 @@ public class LibraryController {
         alert.show();
     }
 }
+
 
 
