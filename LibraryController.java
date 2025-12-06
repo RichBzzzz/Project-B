@@ -164,6 +164,13 @@ public class LibraryController {
 
     private void handleSearch(String type){
         view.drawSearchBy(type);
+        view.backBtn.setOnAction(e -> {
+            if (model.getCurrentUser() instanceof Librarian) {
+                showLibrarianMenu();
+            } else {
+                showMemberMenu();
+            }
+        });
         view.actionBtn.setText("Search");
         view.actionBtn.setOnAction(e -> {
             String query = view.searchField.getText();
@@ -240,6 +247,7 @@ public class LibraryController {
         alert.show();
     }
 }
+
 
 
 
